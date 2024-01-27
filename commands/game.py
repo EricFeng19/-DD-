@@ -7,21 +7,13 @@ class Game(Cog_Extension):
 
     @commands.command()
     async def guess(self, ctx): 
-        mode == ""
+        mode = ""
         await ctx.send("請選擇遊戲難度並發送留言，目前可選擇 easy 或 hard")
-        mode = await ctx.bot.wait_for("message", check=lambda message: message.author == ctx.author and message.channel == ctx.channel)
+        mode = await self.bot.wait_for("message", check=lambda message: message.author == ctx.author and message.channel == ctx.channel)
         #定義一個 lambda 函式作為 check 的參數，以確定哪些訊息可以觸發指令
-
-        if mode.content.lower() == "easy":
-            await ctx.send("遊戲難度設定為easy")
-            await play_easy(ctx)
-        elif mode.content.lower() == "hard":
-            await ctx.send("遊戲難度設定為hard")
-            await play_hard(ctx)
-        else:
-            await ctx.send("無效的難度選擇,請輸入easy或hard")
         
-        async def play_easy(ctx):
+        async def play_easy(self, ctx):
+            print("Entered play_easy or play_hard function")
             secret_number = random.randint(1, 100)  #用randint隨機選擇整數
             await ctx.send("歡迎遊玩猜數字遊戲owo 請猜一個1~100內的正整數") #ctx.send() 可將回應傳送到指令所在的頻道，而不是使用 print() 函數顯示在控制台     
             low , high =1 , 100
@@ -46,7 +38,7 @@ class Game(Cog_Extension):
                 if guess == secret_number:            
                     await ctx.send(f"恭喜你猜對了！答案是 {secret_number}，你總共猜了 {count+1} 次") # 
                     # {字串格式化}能解決參數類型錯誤:TypeError: Context.send() takes from 1 to 2 positional arguments but 3 were given
-                    break # 玩家猜對了，遊戲結束
+                    break  #玩家猜對了，遊戲結束
 
                 elif guess < secret_number:            
                     await ctx.send("你猜的數字太小了，請繼續猜測！範圍是 {}~{}".format(guess, high))
@@ -58,12 +50,13 @@ class Game(Cog_Extension):
                     high = guess
                     count += 1
 
-        async def play_hard(ctx):
+        async def play_hard(self, ctx):
+            print("Entered play_easy or play_hard function")
             secret_number = random.randint(1, 100)
             await ctx.send("歡迎遊玩猜數字遊戲owo 請猜一個1~100內的正整數,挑戰模式僅有五次猜測機會")
             low , high =1 , 100
             count = 0 
-            while True: 
+            while count <= 5: 
                 guess = await ctx.bot.wait_for("message", check=lambda message: message.author == ctx.author and message.channel == ctx.channel)
 
                 if guess.content == "finish": 
@@ -79,7 +72,6 @@ class Game(Cog_Extension):
                     await ctx.send("你猜的數字超出範圍了0.0")
                     continue
 
-            while count <= 5:
                 if guess == secret_number:            
                     await ctx.send(f"恭喜你猜對了！答案是 {secret_number}，你總共猜了 {count+1} 次") # 
                     break 
@@ -94,7 +86,19 @@ class Game(Cog_Extension):
                     high = guess
                     count += 1
                 
-                await ctx.send(f"本次挑戰失敗，正確答案是 {secret_number} ,歡迎下次再來_._")
+                if count > 5:
+                    await ctx.send(f"本次挑戰失敗，正確答案是 {secret_number} ,歡迎下次再來_._")
+        
+        if mode.content.lower() == "easy":
+            await ctx.send("遊戲難度設定為easy")
+            print("Entered play_easy function")
+            await play_easy(self, ctx)
+        elif mode.content.lower() == "hard":
+            await ctx.send("遊戲難度設定為hard")
+            print("Entered play_hard function")
+            await play_hard(self, ctx)
+        else:
+            await ctx.send("無效的難度選擇,請輸入easy或hard")
 
     @guess.error
     async def guess_error(self, ctx, error):
