@@ -41,13 +41,13 @@ class Game(Cog_Extension):
                     break  #玩家猜對了，遊戲結束
 
                 elif guess < secret_number:            
-                    await ctx.send("你猜的數字太小了，請繼續猜測！範圍是 {}~{}".format(guess, high))
-                    low = guess
+                    await ctx.send("你猜的數字太小了，請繼續猜測！範圍是 {}~{}".format(guess+1, high))
+                    low = guess+1
                     count += 1
                     
                 else:
-                    await ctx.send("你猜的數字太大了，請繼續猜測！範圍是 {}~{}".format(low, guess))
-                    high = guess
+                    await ctx.send("你猜的數字太大了，請繼續猜測！範圍是 {}~{}".format(low, guess-1))
+                    high = guess-1
                     count += 1
 
         async def play_hard(self, ctx):
@@ -55,12 +55,12 @@ class Game(Cog_Extension):
             secret_number = random.randint(1, 100)
             await ctx.send("歡迎遊玩猜數字遊戲owo 請猜一個1~100內的正整數,挑戰模式僅有五次猜測機會")
             low , high =1 , 100
-            count = 0 
+            count = 1
             while count <= 5: 
                 guess = await ctx.bot.wait_for("message", check=lambda message: message.author == ctx.author and message.channel == ctx.channel)
 
                 if guess.content == "finish": 
-                    await ctx.send(f"@{ctx.author.mention} 已離開遊戲QwQ 歡迎下次再來owo")
+                    await ctx.send(f"{ctx.author.mention} 已離開遊戲QwQ 歡迎下次再來owo")
                     break
                 try:                
                     guess = int(guess.content) 
@@ -73,21 +73,22 @@ class Game(Cog_Extension):
                     continue
 
                 if guess == secret_number:            
-                    await ctx.send(f"恭喜你猜對了！答案是 {secret_number}，你總共猜了 {count+1} 次") # 
+                    await ctx.send(f"恭喜你猜對了！答案是 {secret_number}，你總共猜了 {count} 次") 
                     break 
 
                 elif guess < secret_number:            
-                    await ctx.send("你猜的數字太小了，請繼續猜測！範圍是 {}~{}".format(guess, high))
-                    low = guess
+                    await ctx.send("你猜的數字太小了，請繼續猜測！範圍是 {}~{}".format(guess+1, high))
+                    low = guess+1
                     count += 1
                     
                 else:
-                    await ctx.send("你猜的數字太大了，請繼續猜測！範圍是 {}~{}".format(low, guess))
-                    high = guess
+                    await ctx.send("你猜的數字太大了，請繼續猜測！範圍是 {}~{}".format(low, guess-1))
+                    high = guess-1
                     count += 1
-                
+
                 if count > 5:
                     await ctx.send(f"本次挑戰失敗，正確答案是 {secret_number} ,歡迎下次再來_._")
+                    break
         
         if mode.content.lower() == "easy":
             await ctx.send("遊戲難度設定為easy")
@@ -109,7 +110,7 @@ class Game(Cog_Extension):
                 await ctx.send("請輸入一個整數.w.")
         else:
             # 如果不是 ValueError，就提醒使用者尚未開始遊戲
-            await ctx.send(f"@{ctx.author.mention} 你還沒開始遊戲！請輸入 f!guess 開始遊戲")
+            await ctx.send(f"{ctx.author.mention} 你還沒開始遊戲！請輸入 f!guess 開始遊戲")
 
 async def setup(bot):
     await bot.add_cog(Game(bot))
