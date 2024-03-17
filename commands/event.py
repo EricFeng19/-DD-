@@ -3,10 +3,11 @@ from discord.ext import commands
 from Core.classes import Cog_Extension
 import json
 
-with open('setting.json','r',encoding='utf8') as jfile:  ##r=read
+# 讀取(r=read) setting.json 檔案，並轉換為 Python 物件(class)
+with open('setting.json','r',encoding='utf8') as jfile: 
     jdata=json.load(jfile)
 
-class Event(Cog_Extension):
+class Event(Cog_Extension): # 從之前導入的 Cog_Extension 定義一個名為 Event 的類別 
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
